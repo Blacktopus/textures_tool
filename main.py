@@ -15,12 +15,16 @@ color_font = ()
 font_size = 70
 
 def save_img(file_name, text):
-    font = ImageFont.truetype('arial.ttf', font_size)
-    image = Image.open(source_path + '\\' + file_name)
-    text_pos = (image.size[0] - font_size * 3, 0 + font_size*2)
-    drawer = ImageDraw.Draw(image)
-    drawer.text(text_pos, text, font=font, fill=(77, 201, 122))
-    image.save(target_path + '\\' + file_name)
+    try:
+        font = ImageFont.truetype('arial.ttf', font_size)
+        image = Image.open(source_path + '\\' + file_name)
+        text_pos = (image.size[0] - font_size * 3, 0 + font_size*2)
+        drawer = ImageDraw.Draw(image)
+        drawer.text(text_pos, text, font=font, fill=color_font)
+        image.save(target_path + '\\' + file_name)
+        error_codes()
+    except:
+        error_codes(7)
 
 def font_change():
     global color_font, font_size
@@ -30,6 +34,7 @@ def font_change():
             for clr in color_tuple:
                 if 0 < clr < 256:
                     color_font = color_tuple
+                    error_codes()
                 else:
                     error_codes(2)
         except:
@@ -42,6 +47,7 @@ def font_change():
             fnt_sz = int(font_sz_field.get())
             if 0 < fnt_sz < 256:
                 font_size = fnt_sz
+                error_codes()
             else:
                 error_codes(3)
         except:
@@ -79,7 +85,6 @@ def run_program():
                 csv_file = open(f'{target_path}\\{csv_name}', 'w+') #create csv file
                 csv_file.write('Index image,name of image\n') #headers for csv
                 csv_file.close()
-    
             file_indx = 1
             if get_mode.get() == 0:
                 if source_file == '':
@@ -98,8 +103,8 @@ def run_program():
                                 file_indx += 1
                             else:
                                 continue
-            if get_mode.get() == 1 or 2:
-                if source_file in source_path:
+            elif get_mode.get() == 1 or get_mode.get() == 2:
+                if True: #if source_file in source_files:
                     if get_mode.get() == 1:
                         csv_file = open(f'{target_path}\\{csv_name}', 'r')
                         chr_fr_rplce = ['(', ')', '0']
@@ -114,6 +119,7 @@ def run_program():
                                 file_indx = int(row_numb)
                                 save_img(source_file, numbering(file_indx))
                                 csv_file.close()
+                                error_codes()
                                 break
                             else:
                                 continue
@@ -130,13 +136,7 @@ def run_program():
                         file_indx = int(row_numb+1)
                         save_img(source_file, numbering(file_indx))
                         csv_file.close()
-                        for row in csv_file:
-                            if source_file in row:
-                                
-                                break
-                            else:
-                                continue
-                        pass
+                        error_codes()
                 else:
                     error_codes(6)
         except:
@@ -147,19 +147,24 @@ def run_program():
 def open_help():
     try:
         os.startfile('Help textures tool.txt')
+        error_codes()
     except:
         error_codes(5)
 
 def error_codes(err_code = 0):
     global error_message
-    errs_dict = { 1 : 'укажите отличающиеся пути',
+    errs_dict = { 
+                1: 'укажите отличающиеся пути',
                 2: 'в поле цвета могут быть только цифры от 0 до 255',
                 3: 'размер шрифта может быть указан только цифрами от 0 до 255',
                 4: 'неправильно указан путь',
                 5: 'файл "Help" не найден',
-                6: 'файл с таким именем не найден'
+                6: 'файл с таким именем не найден',
+                7: 'файл не является изображением'
         }
-    if err_code in errs_dict:
+    if err_code == 0:
+        error_message.set('')
+    elif (err_code > 0) and (err_code in errs_dict):
         error_message.set(f'Ошибка: {errs_dict[err_code]}')
     else:
         error_message.set('Ошибка: неизвестная ошибка')
@@ -227,7 +232,9 @@ color_field_B.grid(row=8, column=4)
 font_sz_field = tk.Entry(mn_win, width=5)
 font_sz_field.grid(row=8, column=5)
 
-font_change()
+tk.Button(mn_win, text = 'Применить', command = font_change)\
+    .grid(row=9,column=2, columnspan=3)
+
 
 #mn_win.grid_rowconfigure(1, minsize=20)
 mn_win.grid_columnconfigure(0, minsize=20)
