@@ -103,14 +103,15 @@ def run_program():
                                 file_indx += 1
                             else:
                                 continue
-            elif get_mode.get() == 1 or get_mode.get() == 2:
-                if True: #if source_file in source_files:
+            elif 1 <= get_mode.get() <= 2:
+                if source_file in source_files: #if source_file in source_files:
                     if get_mode.get() == 1:
                         csv_file = open(f'{target_path}\\{csv_name}', 'r')
                         chr_fr_rplce = ['(', ')', '0']
                         for row in csv_file:
                             if source_file in row:
-                                row_numb = row.split(',')[1]
+                                row_list = row.split(',')
+                                row_numb = row_list[1]
                                 for char in row_numb:
                                     if char in chr_fr_rplce:
                                         row_numb = row_numb.replace(char, '')
@@ -127,7 +128,8 @@ def run_program():
                         csv_file = open(f'{target_path}\\{csv_name}', 'r')
                         last_row = csv_file[-1]
                         chr_fr_rplce = ['(', ')', '0']
-                        row_numb = last_row.split(',')[1]
+                        row_list = last_row.split(',')
+                        row_numb = row_list[1]
                         for char in row_numb:
                             if char in chr_fr_rplce:
                                 row_numb = row_numb.replace(char, '')
