@@ -22,6 +22,31 @@ def save_img(file_name, text):
     drawer.text(text_pos, text, font=font, fill=(77, 201, 122))
     image.save(target_path + '\\' + file_name)
 
+def font_change():
+    global color_font, font_size
+    if (color_field_R.get() or color_field_G.get() or color_field_B.get()) != '':
+        try:
+            color_tuple = (int(color_field_R.get()), int(color_field_G.get()), int(color_field_B.get()))
+            for clr in color_tuple:
+                if 0 < clr < 256:
+                    color_font = color_tuple
+                else:
+                    error_codes(2)
+        except:
+            error_codes(2)
+    else:
+        color_font = (77, 201, 122)
+
+    if font_sz_field.get() != '':
+        try:
+            fnt_sz = int(font_sz_field.get())
+            if 0 < fnt_sz < 256:
+                font_size = fnt_sz
+            else:
+                error_codes(3)
+        except:
+            error_codes(3)
+
 def csv_crtr(index,file_name):
     csv_file = open(f'{target_path}\\{csv_name}', 'a')
     csv_file.write(f'{numbering(index)},{file_name}\n')
@@ -73,14 +98,47 @@ def run_program():
                                 file_indx += 1
                             else:
                                 continue
-            elif get_mode == 1:
-                csv_file = open(f'{target_path}\\{csv_name}', 'r')
-                for row in csv_file:
-                    if source_file in row:
+            if get_mode.get() == 1 or 2:
+                if source_file in source_path:
+                    if get_mode.get() == 1:
+                        csv_file = open(f'{target_path}\\{csv_name}', 'r')
+                        chr_fr_rplce = ['(', ')', '0']
+                        for row in csv_file:
+                            if source_file in row:
+                                row_numb = row.split(',')[1]
+                                for char in row_numb:
+                                    if char in chr_fr_rplce:
+                                        row_numb = row_numb.replace(char, '')
+                                    else:
+                                        continue
+                                file_indx = int(row_numb)
+                                save_img(source_file, numbering(file_indx))
+                                csv_file.close()
+                                break
+                            else:
+                                continue
+                    elif get_mode.get() == 2:
+                        csv_file = open(f'{target_path}\\{csv_name}', 'r')
+                        last_row = csv_file[-1]
+                        chr_fr_rplce = ['(', ')', '0']
+                        row_numb = last_row.split(',')[1]
+                        for char in row_numb:
+                            if char in chr_fr_rplce:
+                                row_numb = row_numb.replace(char, '')
+                            else:
+                                continue
+                        file_indx = int(row_numb+1)
                         save_img(source_file, numbering(file_indx))
-                        break
-                    else:
-                        continue
+                        csv_file.close()
+                        for row in csv_file:
+                            if source_file in row:
+                                
+                                break
+                            else:
+                                continue
+                        pass
+                else:
+                    error_codes(6)
         except:
             error_codes(4)
     else:
@@ -98,7 +156,8 @@ def error_codes(err_code = 0):
                 2: 'в поле цвета могут быть только цифры от 0 до 255',
                 3: 'размер шрифта может быть указан только цифрами от 0 до 255',
                 4: 'неправильно указан путь',
-                5: 'файл "Help" не найден'
+                5: 'файл "Help" не найден',
+                6: 'файл с таким именем не найден'
         }
     if err_code in errs_dict:
         error_message.set(f'Ошибка: {errs_dict[err_code]}')
@@ -124,7 +183,7 @@ lbl_field1 = tk.Label(text='укажите расположение исходн
     .grid(row=1, column=1, stick='w', padx=20)
 field1 = ttk.Entry(mn_win)
 field1.grid(row=2,column=1, stick='we', padx=20)
-lbl_field1_1 = tk.Label(text='укажите ключевые теги в формате: Sgn,DecalGraffiti,PACKED_0\nили имя файла в формате: ***.png', justify='left')\
+lbl_field1_1 = tk.Label(text='укажите ключевые теги в формате: Sgn,DecalGraffiti,PACKED_0...\nили имя файла в формате: name.png', justify='left')\
     .grid(row=3, column=1, stick='ws', padx=20)
 field1_1 = ttk.Entry(mn_win)
 field1_1.grid(row=4,column=1, stick='wne', padx=20)
@@ -168,28 +227,7 @@ color_field_B.grid(row=8, column=4)
 font_sz_field = tk.Entry(mn_win, width=5)
 font_sz_field.grid(row=8, column=5)
 
-if (color_field_R.get() or color_field_G.get() or color_field_B.get()) != '':
-    try:
-        color_tuple = (int(color_field_R.get()), int(color_field_G.get()), int(color_field_B.get()))
-        for clr in color_tuple:
-            if 0 < clr < 256:
-                color_font = color_tuple
-            else:
-                error_codes(2)
-    except:
-        error_codes(2)
-else:
-    color_font = (77, 201, 122)
-
-if font_sz_field.get() != '':
-    try:
-        fnt_sz = int(font_sz_field.get())
-        if 0 < fnt_sz < 256:
-            font_size = fnt_sz
-        else:
-            error_codes(3)
-    except:
-        error_codes(3)
+font_change()
 
 #mn_win.grid_rowconfigure(1, minsize=20)
 mn_win.grid_columnconfigure(0, minsize=20)
