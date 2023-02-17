@@ -1,8 +1,8 @@
-from counter_mark import csv_crtr, numbering, count
-from image_saver import save_img
+import counter_mark # При этом в теле программы надо писать counter_mark.
+from image_saver import save_img # При этом можно писать только название функции save_ivg
 
 def create_file(index,file_name):
-    csv_crtr(index,file_name)
-    save_img(file_name, numbering(index))
+    counter_mark.csv_crtr(index,file_name)
+    save_img(file_name, counter_mark.numbering(index))
     print(index, ' files ready')
-    count(index)
+    counter_mark.count(index)

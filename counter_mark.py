@@ -1,7 +1,7 @@
-from file_path import source_path, target_path, csv_name
+import file_path
 
 def csv_crtr(index,file_name):
-    csv_file = open(f'{target_path}\\{csv_name}', 'a')
+    csv_file = open(f'{file_path.target_path}\\{file_path.csv_name}', 'a')
     csv_file.write(f'{numbering(index)},{file_name}\n')
     csv_file.close()
 
