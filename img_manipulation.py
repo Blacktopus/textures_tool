@@ -4,19 +4,18 @@ from assist_funcs import *
 from buffer import *
 
 
-color_font = ()
+color_font = (77, 201, 122)
 font_size = 70
 
 def save_img(file_name, text):
-    read_actions()
-    print(f'-{source_path},\n-{target_path}')
     try:
         font = ImageFont.truetype('arial.ttf', font_size)
-        image = Image.open(source_path + '\\' + file_name)
-        text_pos = (image.size[0] - font_size * 3, 0 + font_size*2)
+        print(f'{source_path()}\\{file_name}')
+        image = Image.open(source_path() + '\\' + file_name)
         drawer = ImageDraw.Draw(image)
+        text_pos = (image.size[0] - font_size * 3, 0 + font_size*2)
         drawer.text(text_pos, text, font=font, fill=color_font)
-        image.save(target_path + '\\' + file_name)
+        image.save(target_path() + '\\' + file_name)
         error_codes()
     except:
         print('error in save_img')
